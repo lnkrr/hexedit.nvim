@@ -18,6 +18,8 @@ function M.encode()
 
     local line, column = config.opts.cursor.to_encoded(offset)
     utils.set_cursor(line, column)
+
+    vim.bo.modified = false
 end
 
 function M.decode()
@@ -28,6 +30,7 @@ function M.decode()
     vim.b.hexedit = false
 
     local line, column = utils.get_cursor()
+
     utils.apply_to_buffer(0, config.opts.decode)
 
     local new_line, new_column =
@@ -35,6 +38,8 @@ function M.decode()
 
     utils.set_cursor(new_line, new_column)
     vim.bo.filetype = vim.b.hexedit_ft
+
+    vim.bo.modified = false
 end
 
 return M

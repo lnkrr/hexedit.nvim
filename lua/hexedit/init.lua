@@ -4,6 +4,8 @@ local buffer = require("hexedit.buffer")
 local config = require("hexedit.config")
 local utils = require("hexedit.utils")
 
+local pre_write_view = nil
+
 function M.toggle()
     if vim.b.hexedit then
         buffer.decode()
@@ -21,6 +23,7 @@ function M.setup(opts)
                 return
             end
 
+            pre_write_view = vim.fn.winsaveview()
             utils.apply_to_buffer(args.buf, config.opts.decode)
         end,
     })
@@ -32,6 +35,7 @@ function M.setup(opts)
             end
 
             utils.apply_to_buffer(args.buf, config.opts.encode)
+            vim.fn.winrestview(pre_write_view)
         end,
     })
 
