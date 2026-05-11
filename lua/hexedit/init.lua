@@ -6,11 +6,19 @@ local utils = require("hexedit.utils")
 
 local pre_write_view = nil
 
+function M.encode()
+    buffer.encode()
+end
+
+function M.decode()
+    buffer.decode()
+end
+
 function M.toggle()
     if vim.b.hexedit then
-        buffer.decode()
+        M.decode()
     else
-        buffer.encode()
+        M.encode()
     end
 end
 
@@ -83,7 +91,29 @@ function M.setup(opts)
         end,
     })
 
-    vim.api.nvim_create_user_command("HexeditToggle", M.toggle, {})
+    vim.api.nvim_create_user_command("Hexedit", function(args)
+        if args.fargs[2] ~= nil then
+            vim.notify("Too many arguments", vim.log.levels.ERROR)
+            return
+        end
+
+        local cmd = args.fargs[1]
+
+        if cmd == "toggle" then
+            M.toggle()
+        elseif cmd == "encode" then
+            M.encode()
+        elseif cmd == "decode" then
+            M.decode()
+        else
+            vim.notify("Unknown command", vim.log.levels.ERROR)
+        end
+    end, {
+        nargs = "+",
+        complete = function()
+            return { "toggle", "encode", "decode" }
+        end,
+    })
 end
 
 return M
