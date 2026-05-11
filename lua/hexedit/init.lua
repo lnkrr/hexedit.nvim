@@ -27,9 +27,7 @@ function M.setup(opts)
 
     vim.api.nvim_create_autocmd("BufReadPost", {
         callback = function()
-            local filename = vim.api.nvim_buf_get_name(0)
-
-            if config.opts.should_open_with_hexedit(filename) then
+            if config.opts.should_open_with_hexedit(0) then
                 buffer.encode()
             end
         end,

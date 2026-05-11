@@ -36,7 +36,17 @@ M.opts = {
 
         return result.stdout
     end,
-    should_open_with_hexedit = function(filename)
+    should_open_with_hexedit = function(buffer)
+        if vim.bo[buffer].buftype ~= "" then
+            return false
+        end
+
+        local filename = vim.api.nvim_buf_get_name(buffer)
+
+        if filename == "" then
+            return false
+        end
+
         local result = vim.system({
             "file",
             "--mime-type",
