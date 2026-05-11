@@ -22,13 +22,21 @@ M.opts = {
             local step = 2 * M.opts.xxd.groupsize + 1
 
             local line = math.floor(offset / 16) + 1
-            local column = 10 + offset % 16 * step
+            local column = 11 + offset % 16 * step
 
             return line, column
         end,
         to_decoded = function(line, column)
             local step = 2 * M.opts.xxd.groupsize + 1
-            return (line - 1) * 16 + math.floor((column - 11) / step)
+            return (line - 1) * 16 + math.floor((column - 11) / step) + 1
+        end,
+        snap = function(line, column)
+            local step = 2 * M.opts.xxd.groupsize + 1
+            return line,
+                math.min(
+                    math.max(column, 11),
+                    9 + math.ceil(step * 16 / M.opts.xxd.groupsize)
+                )
         end,
     },
     xxd = {

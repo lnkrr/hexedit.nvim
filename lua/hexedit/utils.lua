@@ -33,7 +33,7 @@ function M.offset_to_cursor(offset)
 end
 
 function M.set_cursor(line, column)
-    vim.api.nvim_win_set_cursor(0, { line, column })
+    vim.api.nvim_win_set_cursor(0, { line, column - 1 })
 end
 
 return M
