@@ -21,17 +21,20 @@ M.opts = {
     end,
     cursor = {
         to_encoded = function(offset)
-            local step = 2 * M.opts.xxd.groupsize + 1
-
             local line = math.floor(offset / M.opts.xxd.cols) + 1
-            local column = 11 + offset % M.opts.xxd.cols * step
+
+            local column = 11
+                + offset % M.opts.xxd.cols * 2
+                + math.floor(offset % M.opts.xxd.cols / M.opts.xxd.groupsize)
 
             return line, column
         end,
         to_decoded = function(line, column)
             local step = 2 * M.opts.xxd.groupsize + 1
+
             return (line - 1) * M.opts.xxd.cols
-                + math.floor((column - 11) / step)
+                + math.floor((column - 11) / step) * M.opts.xxd.groupsize
+                + math.floor((column - 11) % step / 2)
                 + 1
         end,
         snap = function(line, column)
@@ -45,7 +48,7 @@ M.opts = {
     },
     xxd = {
         groupsize = 1,
-        cols = 20,
+        cols = 16,
     },
     filetype = "xxd",
 }
