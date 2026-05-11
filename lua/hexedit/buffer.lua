@@ -1,6 +1,7 @@
 local M = {}
 
 local config = require("hexedit.config")
+local utils = require("hexedit.utils")
 
 function M.encode()
     if vim.b.hexedit then
@@ -11,7 +12,7 @@ function M.encode()
     vim.b.hexedit = true
 
     vim.bo.filetype = config.opts.filetype
-    config.opts.encode()
+    utils.apply_to_buffer(0, config.opts.encode)
 end
 
 function M.decode()
@@ -21,7 +22,7 @@ function M.decode()
 
     vim.b.hexedit = false
 
-    config.opts.decode()
+    utils.apply_to_buffer(0, config.opts.decode)
     vim.bo.filetype = vim.b.hexedit_ft
 end
 

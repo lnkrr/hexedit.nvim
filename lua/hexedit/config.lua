@@ -1,13 +1,17 @@
 local M = {}
 
 M.opts = {
-    encode = function()
-        vim.cmd("%!xxd")
+    encode = function(data)
+        local result = vim.system({ "xxd" }, { stdin = data, text = false })
+            :wait()
+
+        return result.stdout
     end,
-    decode = function()
-        vim.cmd("%!xxd -r")
+    decode = function(data)
+        local result = vim.system({ "xxd", "-r" }, { stdin = data }):wait()
+        return result.stdout
     end,
-    filetype = "xxd"
+    filetype = "xxd",
 }
 
 function M.setup(opts)
