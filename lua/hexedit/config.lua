@@ -55,6 +55,7 @@ M.opts = {
         }):wait()
 
         return not string.find(result.stdout, "text/")
+            and not string.find(result.stdout, "inode/")
     end,
     cursor = {
         to_encoded = function(offset)
