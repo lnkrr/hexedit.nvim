@@ -17,4 +17,23 @@ function M.apply_to_buffer(buffer, func)
     M.set_lines(buffer, M.apply_to_lines(M.get_lines(buffer), func))
 end
 
+function M.get_cursor()
+    return vim.fn.line("."), vim.fn.col(".")
+end
+
+function M.cursor_to_offset(line, column)
+    return vim.fn.line2byte(line) + column - 2
+end
+
+function M.offset_to_cursor(offset)
+    local line = vim.fn.byte2line(offset + 1)
+    local column = offset - vim.fn.line2byte(line) + 1
+
+    return line, column
+end
+
+function M.set_cursor(line, column)
+    vim.api.nvim_win_set_cursor(0, { line, column })
+end
+
 return M
