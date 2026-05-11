@@ -36,6 +36,16 @@ M.opts = {
 
         return result.stdout
     end,
+    should_open_with_hexedit = function(filename)
+        local result = vim.system({
+            "file",
+            "--mime-type",
+            "-b",
+            filename,
+        }):wait()
+
+        return not string.find(result.stdout, "text/")
+    end,
     cursor = {
         to_encoded = function(offset)
             local line = math.floor(offset / M.opts.xxd.cols) + 1

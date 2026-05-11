@@ -17,6 +17,16 @@ end
 function M.setup(opts)
     config.setup(opts)
 
+    vim.api.nvim_create_autocmd("BufReadPost", {
+        callback = function()
+            local filename = vim.api.nvim_buf_get_name(0)
+
+            if config.opts.should_open_with_hexedit(filename) then
+                buffer.encode()
+            end
+        end,
+    })
+
     vim.api.nvim_create_autocmd("BufWritePre", {
         callback = function(args)
             if not vim.b.hexedit then
