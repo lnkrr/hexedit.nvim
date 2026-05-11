@@ -1,9 +1,27 @@
 local M = {}
 
+local function to_xxd_args(opts)
+    local result = {}
+
+    if opts.groupsize then
+        table.insert(result, "-g" .. opts.groupsize)
+    end
+
+    if opts.cols then
+        table.insert(result, "-c" .. opts.cols)
+    end
+
+    if opts.uppercase then
+        table.insert(result, "-u")
+    end
+
+    return result
+end
+
 M.opts = {
     encode = function(data)
         local result = vim.system(
-            { "xxd", "-g" .. M.opts.xxd.groupsize, "-c" .. M.opts.xxd.cols },
+            { "xxd", table.unpack(to_xxd_args(M.opts.xxd)) },
             { stdin = data, text = false }
         ):wait()
 
@@ -13,8 +31,7 @@ M.opts = {
         local result = vim.system({
             "xxd",
             "-r",
-            "-g" .. M.opts.xxd.groupsize,
-            "-c" .. M.opts.xxd.cols,
+            table.unpack(to_xxd_args(M.opts.xxd)),
         }, { stdin = data }):wait()
 
         return result.stdout
@@ -49,6 +66,7 @@ M.opts = {
     xxd = {
         groupsize = 1,
         cols = 16,
+        uppercase = true,
     },
     filetype = "xxd",
 }

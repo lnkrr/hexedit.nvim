@@ -54,6 +54,25 @@ function M.setup(opts)
         end,
     })
 
+    vim.api.nvim_create_autocmd("InsertCharPre", {
+        callback = function()
+            if not vim.b.hexedit then
+                return
+            end
+
+            if not vim.v.char:match("[ %x]") then
+                vim.v.char = ""
+                return
+            end
+
+            if config.opts.xxd.uppercase then
+                vim.v.char = vim.v.char:upper()
+            else
+                vim.v.char = vim.v.char:lower()
+            end
+        end,
+    })
+
     vim.api.nvim_create_user_command("HexeditToggle", M.toggle, {})
 end
 
