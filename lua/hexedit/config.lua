@@ -89,7 +89,7 @@ M.opts = {
         cols = 16,
         uppercase = true,
     },
-    filetype = "xxd",
+    filetype = "hexedit",
 }
 
 function M.setup(opts)
