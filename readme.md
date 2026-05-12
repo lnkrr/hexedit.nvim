@@ -45,6 +45,35 @@ Plug 'lnkrr/hexedit.nvim'
 require("hexedit").setup()
 ```
 
+## Usage
+
+Enable/disable hex view:
+
+```
+:Hexedit toggle
+:Hexedit decode
+:Hexedit encode
+```
+
+Jump to a specific address:
+
+```
+:Hexedit goto 256
+:Hexedit goto 0x100
+```
+
+## Lua API
+
+```lua
+local hexedit = require("hexedit")
+
+hexedit.toggle()
+hexedit.decode()
+hexedit.encode()
+
+hexedit.goto_offset(0x100)
+```
+
 ## Options
 
 ```lua
