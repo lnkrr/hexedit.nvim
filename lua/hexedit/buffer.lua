@@ -18,13 +18,13 @@ function M.encode()
     vim.b.hexedit_ft = vim.bo.filetype
     vim.b.hexedit = true
 
-    local offset = utils.cursor_to_offset(utils.get_cursor())
+    local offset = utils.cursor_to_offset(0, utils.get_cursor(0))
     vim.bo.filetype = config.opts.filetype
 
     utils.apply_to_buffer(0, config.opts.encode)
 
     local line, column = config.opts.cursor.to_encoded(offset)
-    utils.set_cursor(line, column)
+    utils.set_cursor(0, line, column)
 
     reset_undos()
     vim.bo.modified = false
@@ -37,14 +37,14 @@ function M.decode()
 
     vim.b.hexedit = false
 
-    local line, column = utils.get_cursor()
+    local line, column = utils.get_cursor(0)
 
     utils.apply_to_buffer(0, config.opts.decode)
 
     local new_line, new_column =
-        utils.offset_to_cursor(config.opts.cursor.to_decoded(line, column))
+        utils.offset_to_cursor(0, config.opts.cursor.to_decoded(line, column))
 
-    utils.set_cursor(new_line, new_column)
+    utils.set_cursor(0, new_line, new_column)
     vim.bo.filetype = vim.b.hexedit_ft
 
     reset_undos()

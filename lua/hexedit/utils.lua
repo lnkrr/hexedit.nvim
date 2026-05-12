@@ -17,23 +17,40 @@ function M.apply_to_buffer(buffer, func)
     M.set_lines(buffer, M.apply_to_lines(M.get_lines(buffer), func))
 end
 
-function M.get_cursor()
-    return vim.fn.line("."), vim.fn.col(".")
+function M.get_cursor(window)
+    local result = vim.api.nvim_win_get_cursor(window)
+    return result[1], result[2] + 1
 end
 
-function M.cursor_to_offset(line, column)
-    return vim.fn.line2byte(line) + column - 2
+function M.cursor_to_offset(buffer, line, column)
+    return vim.api.nvim_buf_get_offset(buffer, line - 1) + column - 1
 end
 
-function M.offset_to_cursor(offset)
-    local line = vim.fn.byte2line(offset + 1)
-    local column = offset - vim.fn.line2byte(line) + 1
+function M.offset_to_cursor(buffer, offset)
+    local n_lines = vim.api.nvim_buf_line_count(buffer)
 
-    return line, column
+    local low, high = 1, n_lines
+    local line = 1
+
+    while low <= high do
+        local mid = math.floor((low + high) / 2)
+        local start = vim.api.nvim_buf_get_offset(buffer, mid - 1)
+
+        if start > offset then
+            high = mid - 1
+        else
+            line = mid
+            low = mid + 1
+        end
+    end
+
+    local column = offset - vim.api.nvim_buf_get_offset(buffer, line - 1)
+
+    return line, math.max(column, 1)
 end
 
-function M.set_cursor(line, column)
-    vim.api.nvim_win_set_cursor(0, { line, column - 1 })
+function M.set_cursor(window, line, column)
+    vim.api.nvim_win_set_cursor(window, { line, column - 1 })
 end
 
 return M

@@ -61,11 +61,11 @@ function M.setup(opts)
                 return
             end
 
-            local line, column = utils.get_cursor()
+            local line, column = utils.get_cursor(0)
             local new_line, new_column = config.opts.cursor.snap(line, column)
 
             if new_line ~= line or new_column ~= column then
-                utils.set_cursor(new_line, new_column)
+                utils.set_cursor(0, new_line, new_column)
             end
         end,
     })
