@@ -44,3 +44,39 @@ Plug 'lnkrr/hexedit.nvim'
 ```lua
 require("hexedit").setup()
 ```
+
+## Options
+
+```lua
+require("hexedit").setup({
+    xxd = {
+        groupsize = 1,
+        cols = 16,
+        uppercase = true,
+    },
+    should_open_with_hexedit = function(buffer)
+        if vim.bo[buffer].buftype ~= "" then
+            return false
+        end
+
+        local filename = vim.api.nvim_buf_get_name(buffer)
+
+        if filename == "" then
+            return false
+        end
+
+        local result = vim.system({
+            M.opts.file_exe,
+            "--mime-type",
+            "-b",
+            filename,
+        }):wait()
+
+        return not string.find(result.stdout, "text/")
+            and not string.find(result.stdout, "inode/")
+    end,
+    xxd_exe = "xxd",
+    file_exe = "file",
+    filetype = "hexedit",
+})
+```
