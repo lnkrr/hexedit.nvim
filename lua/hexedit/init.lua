@@ -64,6 +64,8 @@ function M.setup(opts)
             end
 
             pre_write_view = vim.fn.winsaveview()
+
+            utils.merge_undo_next(args.buf)
             utils.apply_to_buffer(args.buf, config.opts.decode)
         end,
     })
@@ -74,7 +76,9 @@ function M.setup(opts)
                 return
             end
 
+            utils.merge_undo_next(args.buf)
             utils.apply_to_buffer(args.buf, config.opts.encode)
+
             vim.fn.winrestview(pre_write_view)
         end,
     })

@@ -53,4 +53,25 @@ function M.set_cursor(window, line, column)
     vim.api.nvim_win_set_cursor(window, { line, column - 1 })
 end
 
+function M.create_undo(buffer)
+    vim.api.nvim_buf_call(buffer, function()
+        vim.cmd.execute('"normal a \\<bs>\\<esc>"')
+    end)
+end
+
+function M.reset_undos(buffer)
+    local undolevels = vim.bo[buffer].undolevels
+    vim.bo[buffer].undolevels = -1
+    M.create_undo(buffer)
+    vim.bo[buffer].undolevels = undolevels
+end
+
+function M.merge_undo_next(buffer)
+    vim.api.nvim_buf_call(buffer, function()
+        vim.cmd("silent! undojoin")
+        M.create_undo(buffer)
+        vim.cmd("undojoin")
+    end)
+end
+
 return M

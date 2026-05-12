@@ -3,13 +3,6 @@ local M = {}
 local config = require("hexedit.config")
 local utils = require("hexedit.utils")
 
-local function reset_undos(buffer)
-    local undolevels = vim.bo[buffer].undolevels
-    vim.bo[buffer].undolevels = -1
-    vim.cmd.execute('"normal a \\<bs>\\<esc>"')
-    vim.bo[buffer].undolevels = undolevels
-end
-
 function M.encode(buffer)
     if vim.b.hexedit then
         return
@@ -26,7 +19,7 @@ function M.encode(buffer)
     local line, column = config.opts.cursor.to_encoded(offset)
     utils.set_cursor(buffer, line, column)
 
-    reset_undos(buffer)
+    utils.reset_undos(buffer)
     vim.bo.modified = false
 end
 
@@ -49,7 +42,7 @@ function M.decode(buffer)
     utils.set_cursor(buffer, new_line, new_column)
     vim.bo.filetype = vim.b.hexedit_ft
 
-    reset_undos(buffer)
+    utils.reset_undos(buffer)
     vim.bo.modified = false
 end
 
