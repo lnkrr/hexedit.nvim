@@ -21,7 +21,7 @@ end
 M.opts = {
     encode = function(data)
         local result = vim.system(
-            { "xxd", table.unpack(to_xxd_args(M.opts.xxd)) },
+            { M.opts.xxd_exe, table.unpack(to_xxd_args(M.opts.xxd)) },
             { stdin = data, text = false }
         ):wait()
 
@@ -29,7 +29,7 @@ M.opts = {
     end,
     decode = function(data)
         local result = vim.system({
-            "xxd",
+            M.opts.xxd_exe,
             "-r",
             table.unpack(to_xxd_args(M.opts.xxd)),
         }, { stdin = data }):wait()
@@ -89,6 +89,7 @@ M.opts = {
         cols = 16,
         uppercase = true,
     },
+    xxd_exe = "xxd",
     filetype = "hexedit",
 }
 
