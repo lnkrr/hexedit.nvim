@@ -22,6 +22,30 @@ function M.toggle()
     end
 end
 
+function M.goto_offset(offset)
+    buffer.goto_offset(offset)
+end
+
+local function to_uint(literal)
+    if literal:match("^0x[%x]+$") then
+        return tonumber(literal, 16)
+    end
+
+    if literal:match("^0b[01]+$") then
+        return tonumber(literal:sub(3), 2)
+    end
+
+    if literal:match("^0o[0-7]+$") then
+        return tonumber(literal:sub(3), 8)
+    end
+
+    if literal:match("^%d+$") then
+        return tonumber(literal)
+    end
+
+    return nil
+end
+
 function M.setup(opts)
     config.setup(opts)
 
@@ -90,12 +114,31 @@ function M.setup(opts)
     })
 
     vim.api.nvim_create_user_command("Hexedit", function(args)
+        local cmd = args.fargs[1]
+
+        if cmd == "goto" then
+            local offset = args.fargs[2]
+
+            if offset == nil then
+                vim.notify("Usage: Hexedit goto <offset>", vim.log.levels.ERROR)
+                return
+            end
+
+            offset = to_uint(offset)
+
+            if offset == nil then
+                vim.notify("Invalid offset", vim.log.levels.ERROR)
+                return
+            end
+
+            M.goto_offset(offset)
+            return
+        end
+
         if args.fargs[2] ~= nil then
             vim.notify("Too many arguments", vim.log.levels.ERROR)
             return
         end
-
-        local cmd = args.fargs[1]
 
         if cmd == "toggle" then
             M.toggle()
@@ -109,7 +152,7 @@ function M.setup(opts)
     end, {
         nargs = "+",
         complete = function()
-            return { "toggle", "encode", "decode" }
+            return { "toggle", "encode", "decode", "goto" }
         end,
     })
 end

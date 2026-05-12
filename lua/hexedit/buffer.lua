@@ -51,4 +51,13 @@ function M.decode()
     vim.bo.modified = false
 end
 
+function M.goto_offset(offset)
+    if not vim.b.hexedit then
+        return
+    end
+
+    local line, column = config.opts.cursor.to_encoded(offset)
+    utils.set_cursor(0, line, column)
+end
+
 return M
