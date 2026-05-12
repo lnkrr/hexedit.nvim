@@ -7,11 +7,11 @@ local utils = require("hexedit.utils")
 local pre_write_view = nil
 
 function M.encode()
-    buffer.encode()
+    buffer.encode(0)
 end
 
 function M.decode()
-    buffer.decode()
+    buffer.decode(0)
 end
 
 function M.toggle()
@@ -23,7 +23,7 @@ function M.toggle()
 end
 
 function M.goto_offset(offset)
-    buffer.goto_offset(offset)
+    buffer.goto_offset(0, offset)
 end
 
 local function to_uint(literal)
@@ -52,7 +52,7 @@ function M.setup(opts)
     vim.api.nvim_create_autocmd("BufReadPost", {
         callback = function()
             if config.opts.should_open_with_hexedit(0) then
-                buffer.encode()
+                M.encode()
             end
         end,
     })
