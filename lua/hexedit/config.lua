@@ -48,7 +48,7 @@ M.opts = {
         end
 
         local result = vim.system({
-            "file",
+            M.opts.file_exe,
             "--mime-type",
             "-b",
             filename,
@@ -90,6 +90,7 @@ M.opts = {
         uppercase = true,
     },
     xxd_exe = "xxd",
+    file_exe = "file",
     filetype = "hexedit",
 }
 
