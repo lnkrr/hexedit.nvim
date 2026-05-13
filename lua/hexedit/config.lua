@@ -54,8 +54,30 @@ M.opts = {
             filename,
         }):wait()
 
-        return not string.find(result.stdout, "text/")
-            and not string.find(result.stdout, "inode/")
+        local stdout = result.stdout:gsub("%s+", "")
+
+        for _, type in ipairs({
+            "text/",
+            "inode/",
+            "javascript",
+            "xml",
+            "json",
+        }) do
+            if string.find(stdout, type) then
+                return false
+            end
+        end
+
+        for _, type in ipairs({
+            "application/x-sh",
+            "application/x-shellscript",
+        }) do
+            if stdout == type then
+                return false
+            end
+        end
+
+        return true
     end,
     cursor = {
         to_encoded = function(offset)
