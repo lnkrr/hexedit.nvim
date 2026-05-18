@@ -18,6 +18,8 @@ local function to_xxd_args(opts)
     return result
 end
 
+local utils = require("hexedit.utils")
+
 M.opts = {
     encode = function(data)
         local result = vim.system(
@@ -100,8 +102,9 @@ M.opts = {
         snap = function(line, column)
             local step = 2 * M.opts.xxd.groupsize + 1
             return line,
-                math.min(
-                    math.max(column, 11),
+                utils.clamp(
+                    column,
+                    11,
                     9 + math.ceil(step * M.opts.xxd.cols / M.opts.xxd.groupsize)
                 )
         end,

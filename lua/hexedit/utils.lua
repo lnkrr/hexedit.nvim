@@ -1,5 +1,9 @@
 local M = {}
 
+function M.clamp(value, min, max)
+    return math.min(math.max(value, min), max)
+end
+
 function M.get_lines(buffer)
     return vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
 end
