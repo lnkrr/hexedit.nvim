@@ -22,21 +22,17 @@ local utils = require("hexedit.utils")
 
 M.opts = {
     encode = function(data)
-        local result = vim.system(
+        return utils.run_cmd(
             { M.opts.xxd_exe, table.unpack(to_xxd_args(M.opts.xxd)) },
             { stdin = data, text = false }
-        ):wait()
-
-        return result.stdout
+        )
     end,
     decode = function(data)
-        local result = vim.system({
+        return utils.run_cmd({
             M.opts.xxd_exe,
             "-r",
             table.unpack(to_xxd_args(M.opts.xxd)),
-        }, { stdin = data }):wait()
-
-        return result.stdout
+        }, { stdin = data })
     end,
     should_open_with_hexedit = function(buffer)
         if vim.bo[buffer].buftype ~= "" then
@@ -49,14 +45,19 @@ M.opts = {
             return false
         end
 
-        local result = vim.system({
+        local stdout, err = utils.run_cmd({
             M.opts.file_exe,
             "--mime-type",
             "-b",
             filename,
-        }):wait()
+        })
 
-        local stdout = result.stdout:gsub("%s+", "")
+        if stdout == nil then
+            vim.notify(err, vim.log.levels.ERROR)
+            return false
+        end
+
+        stdout = stdout:gsub("%s+", "")
 
         for _, type in ipairs({
             "text/",

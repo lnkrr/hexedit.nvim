@@ -14,11 +14,25 @@ end
 
 function M.apply_to_lines(lines, func)
     local buffer = table.concat(lines, "\n")
-    return vim.split(func(buffer), "\n")
+    local result, err = func(buffer)
+
+    if result == nil then
+        vim.notify(err, vim.log.levels.ERROR)
+        return nil
+    end
+
+    return vim.split(result, "\n")
 end
 
 function M.apply_to_buffer(buffer, func)
-    M.set_lines(buffer, M.apply_to_lines(M.get_lines(buffer), func))
+    local lines = M.apply_to_lines(M.get_lines(buffer), func)
+
+    if lines == nil then
+        return false
+    end
+
+    M.set_lines(buffer, lines)
+    return true
 end
 
 function M.get_cursor(window)
@@ -76,6 +90,22 @@ function M.merge_undo_next(buffer)
         M.create_undo(buffer)
         vim.cmd("undojoin")
     end)
+end
+
+function M.run_cmd(args, opts)
+    local ok, process = pcall(vim.system, args, opts)
+
+    if not ok then
+        return nil, "Failed to call `" .. table.concat(args, " ") .. "`"
+    end
+
+    local result = process:wait()
+
+    if result.code ~= 0 then
+        return nil, result.stderr
+    end
+
+    return result.stdout
 end
 
 return M

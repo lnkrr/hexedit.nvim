@@ -66,7 +66,10 @@ function M.setup(opts)
             pre_write_view = vim.fn.winsaveview()
 
             utils.merge_undo_next(args.buf)
-            utils.apply_to_buffer(args.buf, config.opts.decode)
+
+            if not utils.apply_to_buffer(args.buf, config.opts.decode) then
+                error("Failed to decode")
+            end
         end,
     })
 
@@ -77,7 +80,10 @@ function M.setup(opts)
             end
 
             utils.merge_undo_next(args.buf)
-            utils.apply_to_buffer(args.buf, config.opts.encode)
+
+            if not utils.apply_to_buffer(args.buf, config.opts.encode) then
+                return
+            end
 
             vim.fn.winrestview(pre_write_view)
         end,
