@@ -40,6 +40,10 @@ function M.get_cursor(window)
     return result[1], result[2] + 1
 end
 
+function M.find_window(buffer)
+    return vim.fn.win_findbuf(buffer)[1]
+end
+
 function M.cursor_to_offset(buffer, line, column)
     return vim.api.nvim_buf_get_offset(buffer, line - 1) + column - 1
 end

@@ -4,14 +4,12 @@ local buffer = require("hexedit.buffer")
 local config = require("hexedit.config")
 local utils = require("hexedit.utils")
 
-local pre_write_view = nil
-
 function M.encode()
-    buffer.encode(0)
+    buffer.encode(vim.api.nvim_get_current_buf())
 end
 
 function M.decode()
-    buffer.decode(0)
+    buffer.decode(vim.api.nvim_get_current_buf())
 end
 
 function M.toggle()
@@ -23,7 +21,7 @@ function M.toggle()
 end
 
 function M.goto_offset(offset)
-    buffer.goto_offset(0, offset)
+    buffer.goto_offset(vim.api.nvim_get_current_buf(), offset)
 end
 
 local function to_uint(literal)
@@ -50,8 +48,8 @@ function M.setup(opts)
     config.setup(opts)
 
     vim.api.nvim_create_autocmd("BufReadPost", {
-        callback = function()
-            if config.opts.should_open_with_hexedit(0) then
+        callback = function(args)
+            if config.opts.should_open_with_hexedit(args.buf) then
                 M.encode()
             end
         end,
@@ -59,11 +57,11 @@ function M.setup(opts)
 
     vim.api.nvim_create_autocmd("BufWritePre", {
         callback = function(args)
-            if not vim.b.hexedit then
+            if not vim.b[args.buf].hexedit then
                 return
             end
 
-            pre_write_view = vim.fn.winsaveview()
+            vim.b[args.buf].hexedit_view = vim.fn.winsaveview()
 
             utils.merge_undo_next(args.buf)
 
@@ -75,7 +73,7 @@ function M.setup(opts)
 
     vim.api.nvim_create_autocmd("BufWritePost", {
         callback = function(args)
-            if not vim.b.hexedit then
+            if not vim.b[args.buf].hexedit then
                 return
             end
 
@@ -85,28 +83,34 @@ function M.setup(opts)
                 return
             end
 
-            vim.fn.winrestview(pre_write_view)
+            vim.fn.winrestview(vim.b[args.buf].hexedit_view)
         end,
     })
 
     vim.api.nvim_create_autocmd("CursorMoved", {
-        callback = function()
-            if not vim.b.hexedit then
+        callback = function(args)
+            if not vim.b[args.buf].hexedit then
                 return
             end
 
-            local line, column = utils.get_cursor(0)
+            local window = utils.find_window(args.buf)
+
+            if window == nil then
+                return
+            end
+
+            local line, column = utils.get_cursor(window)
             local new_line, new_column = config.opts.cursor.snap(line, column)
 
             if new_line ~= line or new_column ~= column then
-                utils.set_cursor(0, new_line, new_column)
+                utils.set_cursor(window, new_line, new_column)
             end
         end,
     })
 
     vim.api.nvim_create_autocmd("InsertCharPre", {
-        callback = function()
-            if not vim.b.hexedit then
+        callback = function(args)
+            if not vim.b[args.buf].hexedit then
                 return
             end
 
