@@ -47,7 +47,10 @@ end
 function M.setup(opts)
     config.setup(opts)
 
+    local augroup = vim.api.nvim_create_augroup("Hexedit", { clear = true })
+
     vim.api.nvim_create_autocmd("BufReadPost", {
+        group = augroup,
         callback = function(args)
             if config.opts.should_open_with_hexedit(args.buf) then
                 M.encode()
@@ -56,6 +59,7 @@ function M.setup(opts)
     })
 
     vim.api.nvim_create_autocmd("BufWritePre", {
+        group = augroup,
         callback = function(args)
             if not vim.b[args.buf].hexedit then
                 return
@@ -72,6 +76,7 @@ function M.setup(opts)
     })
 
     vim.api.nvim_create_autocmd("BufWritePost", {
+        group = augroup,
         callback = function(args)
             if not vim.b[args.buf].hexedit then
                 return
@@ -88,6 +93,7 @@ function M.setup(opts)
     })
 
     vim.api.nvim_create_autocmd("CursorMoved", {
+        group = augroup,
         callback = function(args)
             if not vim.b[args.buf].hexedit then
                 return
@@ -109,6 +115,7 @@ function M.setup(opts)
     })
 
     vim.api.nvim_create_autocmd("InsertCharPre", {
+        group = augroup,
         callback = function(args)
             if not vim.b[args.buf].hexedit then
                 return
