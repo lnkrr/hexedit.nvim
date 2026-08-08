@@ -95,7 +95,7 @@ require("hexedit").setup({
         end
 
         local result = vim.system({
-            M.opts.file_exe,
+            require("hexedit.config").opts.file_exe,
             "--mime-type",
             "-b",
             filename,
